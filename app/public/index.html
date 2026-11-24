@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Loan EMI Calculator</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container py-5">
+  <h1 class="mb-4">Loan EMI Calculator</h1>
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <form id="emiForm">
+        <div class="mb-3">
+          <label class="form-label">Loan Amount (P)</label>
+          <input type="number" step="any" min="0.01" class="form-control" id="principal" required>
+          <div class="invalid-feedback" id="principalError"></div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Annual Interest Rate (%)</label>
+          <input type="number" step="any" min="0.01" class="form-control" id="rate" required>
+          <div class="invalid-feedback" id="rateError"></div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Tenure (months)</label>
+          <input type="number" step="1" min="1" class="form-control" id="months" required>
+          <div class="invalid-feedback" id="monthsError"></div>
+        </div>
+        <button type="submit" class="btn btn-primary">Calculate EMI</button>
+      </form>
+      <div id="formAlert" class="alert alert-danger mt-3 d-none"></div>
+    </div>
+  </div>
+
+  <div id="resultPanel" class="card mb-4 d-none">
+    <div class="card-body">
+      <h5 class="card-title">Result</h5>
+      <p>Monthly EMI: <strong id="resEmi"></strong></p>
+      <p>Total Payment: <strong id="resTotalPayment"></strong></p>
+      <p>Total Interest: <strong id="resTotalInterest"></strong></p>
+      <p class="text-muted">Served by pod: <code id="resServedBy"></code></p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Recent Calculations</h5>
+      <table class="table table-striped">
+        <thead>
+          <tr><th>Principal</th><th>Rate</th><th>Months</th><th>EMI</th><th>Served By</th><th>Time</th></tr>
+        </thead>
+        <tbody id="historyBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+function clientValidate() {
+  let valid = true;
+  $('.invalid-feedback').text('');
+  $('#principal, #rate, #months').removeClass('is-invalid');
+
+  const P = parseFloat($('#principal').val());
+  const rate = parseFloat($('#rate').val());
+  const months = parseFloat($('#months').val());
+
+  if (!(P > 0)) {
+    $('#principal').addClass('is-invalid');
+    $('#principalError').text('Loan amount must be a positive number.');
+    valid = false;
+  }
+  if (!(rate > 0)) {
+    $('#rate').addClass('is-invalid');
+    $('#rateError').text('Interest rate must be a positive number.');
+    valid = false;
+  }
+  if (!(months > 0) || !Number.isInteger(months)) {
+    $('#months').addClass('is-invalid');
+    $('#monthsError').text('Tenure must be a positive whole number.');
+    valid = false;
+  }
+  return valid;
+}
+
+function loadHistory() {
+  $.get('/api/history', function (rows) {
+    const body = $('#historyBody');
+    body.empty();
+    rows.forEach(function (row) {
+      body.append(
+        '<tr><td>' + row.principal + '</td><td>' + row.rate + '%</td><td>' + row.months +
+        '</td><td>' + row.emi + '</td><td>' + row.servedBy + '</td><td>' +
+        new Date(row.createdAt).toLocaleString() + '</td></tr>'
+      );
+    });
+  }).fail(function () {
+    console.error('Failed to load history');
+  });
+}
+
+$('#emiForm').on('submit', function (e) {
+  e.preventDefault();
+  $('#formAlert').addClass('d-none').text('');
+
+  if (!clientValidate()) return;
+
+  const payload = {
+    principal: parseFloat($('#principal').val()),
+    rate: parseFloat($('#rate').val()),
+    months: parseInt($('#months').val(), 10),
+  };
+
+  $.ajax({
+    url: '/api/emi',
+    method: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify(payload),
+    success: function (res) {
+      $('#resEmi').text(res.emi);
+      $('#resTotalPayment').text(res.totalPayment);
+      $('#resTotalInterest').text(res.totalInterest);
+      $('#resServedBy').text(res.servedBy);
+      $('#resultPanel').removeClass('d-none');
+      loadHistory();
+    },
+    error: function (xhr) {
+      const msg = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : 'Something went wrong.';
+      $('#formAlert').removeClass('d-none').text(msg);
+    },
+  });
+});
+
+loadHistory();
+</script>
+</body>
+</html>
