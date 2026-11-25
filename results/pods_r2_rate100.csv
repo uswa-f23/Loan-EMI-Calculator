@@ -1,0 +1,9 @@
+timestamp,pod,cpu,memory
+1795594796,emi-web-657fd4bbfd-fkj5z,73m,36Mi
+1795594796,emi-web-657fd4bbfd-wt2mk,73m,46Mi
+1795594812,emi-web-657fd4bbfd-fkj5z,75m,50Mi
+1795594812,emi-web-657fd4bbfd-wt2mk,77m,52Mi
+1795594827,emi-web-657fd4bbfd-fkj5z,75m,50Mi
+1795594827,emi-web-657fd4bbfd-wt2mk,77m,52Mi
+1795594843,emi-web-657fd4bbfd-fkj5z,75m,50Mi
+1795594843,emi-web-657fd4bbfd-wt2mk,77m,52Mi

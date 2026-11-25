@@ -1,0 +1,48 @@
+This is ApacheBench, Version 2.3 <$Revision: 1923142 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking localhost (be patient)
+Finished 2177 requests
+
+
+Server Software:        
+Server Hostname:        localhost
+Server Port:            8081
+
+Document Path:          /api/emi
+Document Length:        104 bytes
+
+Concurrency Level:      100
+Time taken for tests:   60.346 seconds
+Complete requests:      2177
+Failed requests:        22
+   (Connect: 0, Receive: 0, Length: 22, Exceptions: 0)
+Non-2xx responses:      22
+Total transferred:      702544 bytes
+Total body sent:        421060
+HTML transferred:       235428 bytes
+Requests per second:    36.08 [#/sec] (mean)
+Time per request:       2771.974 [ms] (mean)
+Time per request:       27.720 [ms] (mean, across all concurrent requests)
+Transfer rate:          11.37 [Kbytes/sec] received
+                        6.81 kb/s sent
+                        18.18 kb/s total
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    4  13.8      0      96
+Processing:   623 2612 1112.8   2343    7556
+Waiting:       34 2033 1106.8   1754    6518
+Total:        623 2616 1113.7   2360    7556
+
+Percentage of the requests served within a certain time (ms)
+  50%   2360
+  66%   2825
+  75%   3215
+  80%   3429
+  90%   3933
+  95%   4766
+  98%   6004
+  99%   6492
+ 100%   7556 (longest request)
